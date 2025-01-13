@@ -119,7 +119,7 @@ contract MigratorTest is Test {
     function testERC20Migration() public {
         vm.startPrank(user);
         
-        uint migrationAmount = 100 * 10**18;
+        uint migrationAmount = 6 * 10**18;
         uint initialV1Balance = tokenV1.balanceOf(user);
         uint initialV2Balance = tokenV2.balanceOf(user);
         
@@ -170,7 +170,7 @@ contract MigratorTest is Test {
         // Check final balances 
         uint finalV1Balance = tokenV1.balanceOf(user); 
         uint finalV2Balance = tokenV2.balanceOf(user); 
-        console.log("finalv1balance: ", finalV1Balance); 
+        console.log("finalv1balance: ", finalV1Balance / 10**18); 
         console.log("finalV2Balance: ", finalV2Balance / 10**18); 
          
         // Calculate expected amounts 
