@@ -103,7 +103,7 @@ contract MigratorTest is Test {
         tokenV2.transfer(address(migrator), 100000 * 10**18);
 
         // Setup user with V1 assets
-        tokenV1.transfer(user, 1000 * 10**18);
+        tokenV1.transfer(user, 6 * 10**18);
         
         // Mint some V1 NFTs to user
         vm.stopPrank();
@@ -153,9 +153,9 @@ contract MigratorTest is Test {
         uint initialV1Balance = tokenV1.balanceOf(user); 
         uint initialV2Balance = tokenV2.balanceOf(user); 
  
-        console.log("initialv1Balance: ", initialV1Balance); 
-        console.log("initialV2Balance: ", initialV2Balance); 
-        uint migrationAmount = 6; // Migrate 6 tokens 
+        console.log("initialv1Balance: ", initialV1Balance/ 10**18); 
+        console.log("initialV2Balance: ", initialV2Balance/10**18); 
+        uint migrationAmount = 6 * 10**18; // Migrate 6 tokens 
          
         // approve migrator to spend tokens 
         tokenV1.approve(address(migrator), migrationAmount); 
@@ -171,7 +171,7 @@ contract MigratorTest is Test {
         uint finalV1Balance = tokenV1.balanceOf(user); 
         uint finalV2Balance = tokenV2.balanceOf(user); 
         console.log("finalv1balance: ", finalV1Balance); 
-        console.log("finalV2Balance: ", finalV2Balance); 
+        console.log("finalV2Balance: ", finalV2Balance / 10**18); 
          
         // Calculate expected amounts 
         uint expectedV1Decrease = migrationAmount; 
