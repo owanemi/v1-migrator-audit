@@ -107,3 +107,242 @@ Ran 9 test suites in 1.94s (7.01s CPU time): 84 tests passed, 0 failed, 0 skippe
         
 ## Checking gas reports:
 
+To run gas reports:
+
+        forge snapshot --gas-report
+
+The expected output would be:
+```bash
+| src/COA-Contracts/Busd.sol:BUSD contract |                 |       |        |       |         |
+|------------------------------------------|-----------------|-------|--------|-------|---------|
+| Deployment Cost                          | Deployment Size |       |        |       |         |
+| 1190809                                  | 5968            |       |        |       |         |
+| Function Name                            | min             | avg   | median | max   | # calls |
+| allowance                                | 1245            | 1245  | 1245   | 1245  | 2       |
+| approve                                  | 46876           | 46876 | 46876  | 46876 | 1       |
+| balanceOf                                | 850             | 850   | 850    | 850   | 5       |
+| mint                                     | 68892           | 68892 | 68892  | 68892 | 3       |
+| transfer                                 | 52180           | 52180 | 52180  | 52180 | 1       |
+| transferFrom                             | 60306           | 60306 | 60306  | 60306 | 1       |
+
+
+| src/COA-Contracts/Prlz.sol:PRLZ contract |                 |       |        |       |         |
+|------------------------------------------|-----------------|-------|--------|-------|---------|
+| Deployment Cost                          | Deployment Size |       |        |       |         |
+| 1190809                                  | 5968            |       |        |       |         |
+| Function Name                            | min             | avg   | median | max   | # calls |
+| allowance                                | 1245            | 1245  | 1245   | 1245  | 2       |
+| approve                                  | 46876           | 46876 | 46876  | 46876 | 1       |
+| balanceOf                                | 850             | 850   | 850    | 850   | 5       |
+| mint                                     | 68892           | 68892 | 68892  | 68892 | 3       |
+| transfer                                 | 52180           | 52180 | 52180  | 52180 | 1       |
+| transferFrom                             | 60306           | 60306 | 60306  | 60306 | 1       |
+
+
+| src/COA-Contracts/land-nfts-v2/ACREV2.sol:ACREV2 contract |                 |        |        |        |         |
+|-----------------------------------------------------------|-----------------|--------|--------|--------|---------|
+| Deployment Cost                                           | Deployment Size |        |        |        |         |
+| 3847379                                                   | 17649           |        |        |        |         |
+| Function Name                                             | min             | avg    | median | max    | # calls |
+| balanceOf                                                 | 998             | 998    | 998    | 998    | 2       |
+| currentBatch                                              | 1434            | 1434   | 1434   | 1434   | 3       |
+| feeCollector                                              | 552             | 1552   | 1552   | 2552   | 2       |
+| grantRole                                                 | 51995           | 51995  | 51995  | 51995  | 13      |
+| initialize                                                | 187977          | 187977 | 187977 | 187977 | 13      |
+| maxBuyAmount                                              | 2471            | 2471   | 2471   | 2471   | 1       |
+| mint                                                      | 23855           | 67488  | 30583  | 132430 | 7       |
+| paymentToken                                              | 576             | 1576   | 1576   | 2576   | 2       |
+| setCurrentBatch                                           | 26962           | 171879 | 192405 | 192405 | 10      |
+| setCurrentBatchActive                                     | 24386           | 35342  | 35342  | 46298  | 2       |
+| setFeeCollector                                           | 26673           | 26873  | 26673  | 29473  | 14      |
+| setFreeParticipant                                        | 46977           | 46977  | 46977  | 46977  | 1       |
+| setPaymentToken                                           | 29473           | 29473  | 29473  | 29473  | 1       |
+| setTxFee                                                  | 46358           | 46358  | 46358  | 46358  | 1       |
+| txFeeAmount                                               | 537             | 1537   | 1537   | 2537   | 2       |
+
+
+| src/COA-Contracts/land-nfts-v2/PLOTV2.sol:PLOTV2 contract |                 |        |        |        |         |
+|-----------------------------------------------------------|-----------------|--------|--------|--------|---------|
+| Deployment Cost                                           | Deployment Size |        |        |        |         |
+| 3847379                                                   | 17649           |        |        |        |         |
+| Function Name                                             | min             | avg    | median | max    | # calls |
+| balanceOf                                                 | 998             | 998    | 998    | 998    | 2       |
+| currentBatch                                              | 1434            | 1434   | 1434   | 1434   | 3       |
+| feeCollector                                              | 552             | 1552   | 1552   | 2552   | 2       |
+| grantRole                                                 | 51995           | 51995  | 51995  | 51995  | 13      |
+| initialize                                                | 187977          | 187977 | 187977 | 187977 | 13      |
+| maxBuyAmount                                              | 2471            | 2471   | 2471   | 2471   | 1       |
+| mint                                                      | 23855           | 67488  | 30583  | 132430 | 7       |
+| paymentToken                                              | 576             | 1576   | 1576   | 2576   | 2       |
+| setCurrentBatch                                           | 26962           | 171879 | 192405 | 192405 | 10      |
+| setCurrentBatchActive                                     | 24386           | 35342  | 35342  | 46298  | 2       |
+| setFeeCollector                                           | 26673           | 26873  | 26673  | 29473  | 14      |
+| setFreeParticipant                                        | 46977           | 46977  | 46977  | 46977  | 1       |
+| setPaymentToken                                           | 29473           | 29473  | 29473  | 29473  | 1       |
+| setTxFee                                                  | 46358           | 46358  | 46358  | 46358  | 1       |
+| txFeeAmount                                               | 537             | 1537   | 1537   | 2537   | 2       |
+
+
+| src/COA-Contracts/land-nfts-v2/YARDV2.sol:YARDV2 contract |                 |        |        |        |         |
+|-----------------------------------------------------------|-----------------|--------|--------|--------|---------|
+| Deployment Cost                                           | Deployment Size |        |        |        |         |
+| 3847367                                                   | 17649           |        |        |        |         |
+| Function Name                                             | min             | avg    | median | max    | # calls |
+| balanceOf                                                 | 998             | 998    | 998    | 998    | 2       |
+| currentBatch                                              | 1434            | 1434   | 1434   | 1434   | 3       |
+| feeCollector                                              | 552             | 1552   | 1552   | 2552   | 2       |
+| grantRole                                                 | 51995           | 51995  | 51995  | 51995  | 13      |
+| initialize                                                | 187977          | 187977 | 187977 | 187977 | 13      |
+| maxBuyAmount                                              | 2471            | 2471   | 2471   | 2471   | 1       |
+| mint                                                      | 23855           | 67488  | 30583  | 132430 | 7       |
+| paymentToken                                              | 576             | 1576   | 1576   | 2576   | 2       |
+| setCurrentBatch                                           | 26962           | 171879 | 192405 | 192405 | 10      |
+| setCurrentBatchActive                                     | 24386           | 35342  | 35342  | 46298  | 2       |
+| setFeeCollector                                           | 26673           | 26873  | 26673  | 29473  | 14      |
+| setFreeParticipant                                        | 46977           | 46977  | 46977  | 46977  | 1       |
+| setPaymentToken                                           | 29473           | 29473  | 29473  | 29473  | 1       |
+| setTxFee                                                  | 46358           | 46358  | 46358  | 46358  | 1       |
+| txFeeAmount                                               | 537             | 1537   | 1537   | 2537   | 2       |
+
+
+| src/COA-Contracts/land-nfts/ACRE.sol:ATLACRE contract |                 |       |        |        |
+    |
+|-------------------------------------------------------|-----------------|-------|--------|--------|---------|
+| Deployment Cost                                       | Deployment Size |       |        |        |
+    |
+| 3358218                                               | 15852           |       |        |        |
+    |
+| Function Name                                         | min             | avg   | median | max    | # calls |
+| _currentBatch                                         | 990             | 990   | 990    | 990    | 2
+    |
+| _paymentToken                                         | 575             | 575   | 575    | 575    | 1
+    |
+| _txFeeAmount                                          | 515             | 515   | 515    | 515    | 1
+    |
+| balanceOf                                             | 955             | 955   | 955    | 955    | 1
+    |
+| freeParticipantControllers                            | 879             | 879   | 879    | 879    | 1
+    |
+| freeParticipants                                      | 879             | 879   | 879    | 879    | 1
+    |
+| mint                                                  | 28485           | 83476 | 83476  | 138467 | 2
+    |
+| setCurrentBatch                                       | 24825           | 76487 | 94381  | 94381  | 5
+    |
+| setCurrentBatchActive                                 | 24222           | 24222 | 24222  | 24222  | 1
+    |
+| setFeeCollector                                       | 24263           | 26284 | 26487  | 26487  | 11
+    |
+| setFreeParticipant                                    | 48965           | 48965 | 48965  | 48965  | 1
+    |
+| setFreeParticipantController                          | 46756           | 46756 | 46756  | 46756  | 1
+    |
+| setPaymentToken                                       | 29353           | 29353 | 29353  | 29353  | 1
+    |
+| setTxFee                                              | 46090           | 46090 | 46090  | 46090  | 1
+    |
+| totalSupply                                           | 2688            | 2688  | 2688   | 2688   | 1
+    |
+
+
+| src/COA-Contracts/land-nfts/PLOT.sol:ATLPLOT contract |                 |       |        |        |
+    |
+|-------------------------------------------------------|-----------------|-------|--------|--------|---------|
+| Deployment Cost                                       | Deployment Size |       |        |        |
+    |
+| 3328417                                               | 15928           |       |        |        |
+    |
+| Function Name                                         | min             | avg   | median | max    | # calls |
+| _currentBatch                                         | 968             | 968   | 968    | 968    | 2
+    |
+| balanceOf                                             | 976             | 976   | 976    | 976    | 1
+    |
+| freeParticipantControllers                            | 946             | 946   | 946    | 946    | 1
+    |
+| freeParticipants                                      | 923             | 923   | 923    | 923    | 1
+    |
+| mint                                                  | 28463           | 83454 | 83454  | 138445 | 2
+    |
+| paymentToken                                          | 554             | 554   | 554    | 554    | 1
+    |
+| setCurrentBatch                                       | 24803           | 76465 | 94359  | 94359  | 5
+    |
+| setCurrentBatchActive                                 | 24178           | 24178 | 24178  | 24178  | 1
+    |
+| setFeeCollector                                       | 24329           | 26350 | 26553  | 26553  | 11
+    |
+| setFreeParticipant                                    | 46716           | 46716 | 46716  | 46716  | 1
+    |
+| setFreeParticipantController                          | 46823           | 46823 | 46823  | 46823  | 1
+    |
+| setPaymentToken                                       | 29287           | 29287 | 29287  | 29287  | 1
+    |
+| setTxFee                                              | 46090           | 46090 | 46090  | 46090  | 1
+    |
+| totalSupply                                           | 2644            | 2644  | 2644   | 2644   | 1
+    |
+| txFeeAmount                                           | 515             | 515   | 515    | 515    | 1
+    |
+
+
+| src/COA-Contracts/land-nfts/YARD.sol:ATLYARD contract |                 |       |        |        |
+    |
+|-------------------------------------------------------|-----------------|-------|--------|--------|---------|
+| Deployment Cost                                       | Deployment Size |       |        |        |
+    |
+| 3328405                                               | 15928           |       |        |        |
+    |
+| Function Name                                         | min             | avg   | median | max    | # calls |
+| _currentBatch                                         | 968             | 968   | 968    | 968    | 2
+    |
+| balanceOf                                             | 976             | 976   | 976    | 976    | 1
+    |
+| freeParticipantControllers                            | 946             | 946   | 946    | 946    | 1
+    |
+| freeParticipants                                      | 923             | 923   | 923    | 923    | 1
+    |
+| mint                                                  | 28463           | 83454 | 83454  | 138445 | 2
+    |
+| paymentToken                                          | 554             | 554   | 554    | 554    | 1
+    |
+| setCurrentBatch                                       | 24803           | 76465 | 94359  | 94359  | 5
+    |
+| setCurrentBatchActive                                 | 24178           | 24178 | 24178  | 24178  | 1
+    |
+| setFeeCollector                                       | 24329           | 26350 | 26553  | 26553  | 11
+    |
+| setFreeParticipant                                    | 46716           | 46716 | 46716  | 46716  | 1
+    |
+| setFreeParticipantController                          | 46823           | 46823 | 46823  | 46823  | 1
+    |
+| setPaymentToken                                       | 29287           | 29287 | 29287  | 29287  | 1
+    |
+| setTxFee                                              | 46090           | 46090 | 46090  | 46090  | 1
+    |
+| totalSupply                                           | 2644            | 2644  | 2644   | 2644   | 1
+    |
+| txFeeAmount                                           | 515             | 515   | 515    | 515    | 1
+    |
+
+
+| src/Migrator.sol:Migrator contract |                 |        |        |        |         |
+|------------------------------------|-----------------|--------|--------|--------|---------|
+| Deployment Cost                    | Deployment Size |        |        |        |         |
+| 2919057                            | 13335           |        |        |        |         |
+| Function Name                      | min             | avg    | median | max    | # calls |
+| Requirements                       | 14879           | 16879  | 16879  | 18879  | 2       |
+| grantRole                          | 51972           | 51972  | 51972  | 51972  | 9       |
+| initialize                         | 92697           | 92697  | 92697  | 92697  | 9       |
+| migrateAllAsset                    | 40007           | 272396 | 272396 | 504786 | 2       |
+| migrateERC20Token                  | 36291           | 111696 | 149399 | 149399 | 3       |
+| setERC721Requirements              | 26116           | 136734 | 160712 | 160712 | 11      |
+| setTokenInfo                       | 25079           | 69219  | 77053  | 77053  | 11      |
+
+
+| test/unit/Migrator.t.sol:CollectibleMock contract |                 |       |        |       |         ||---------------------------------------------------|-----------------|-------|--------|-------|---------|| Deployment Cost                                   | Deployment Size |       |        |       |         || 2405909                                           | 12104           |       |        |       |         || Function Name                                     | min             | avg   | median | max   |  calls || balanceOf                                         | 952             | 952   | 952    | 952   | 3       || isApprovedForAll                                  | 1308            | 2908  | 3308   | 3308  | 5       || mint                                              | 52414           | 65230 | 69502  | 69502 | 36      || ownerOf                                           | 985             | 2096  | 2985   | 2985  | 9       || setApprovalForAll                                 | 46674           | 46674 | 46674  | 46674 | 3       |
+
+
+
+
+Ran 9 test suites in 3.55s (13.79s CPU time): 84 tests passed, 0 failed, 0 skipped (84 total tests)
+```
