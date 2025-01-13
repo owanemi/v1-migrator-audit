@@ -67,13 +67,14 @@ contract ATLACRE is ERC721A, Ownable {
         require(batch.active, "Current Batch is not active");
         require(quantity > 0, "Quantity must be greater than zero");
         require(quantity <= _maxBuyAmount || msg.sender == owner(), "Exceeds max buy limit");
-
+        
+        // Update remaining quantity
+        _currentBatch.quantity -= quantity;
+        
         if (!freeParticipants[msg.sender]) {
             require(_pay(msg.sender, quantity), "Payment failed");
         }
 
-        // Update remaining quantity
-        _currentBatch.quantity -= quantity;
 
         // Mint tokens
         _safeMint(msg.sender, quantity);
@@ -172,12 +173,11 @@ contract ATLACRE is ERC721A, Ownable {
         returns (bool)
     {
         IERC20 token = IERC20(_paymentToken);
-        token.transferFrom(
+        return token.transferFrom(
             payer,
             _feeCollector,
             _currentBatch.price * quantity
         );
-        return true;
     }
 
     /**

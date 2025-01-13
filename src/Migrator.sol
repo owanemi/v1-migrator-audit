@@ -287,6 +287,8 @@ contract Migrator is Initializable, AccessControlUpgradeable, IERC721Receiver {
         uint newLastMintedID;
         uint counter;
 
+        lastAssetIdMinted[_nft2] = newLastMintedID;
+
         for (uint index = lastAssetIdMinted[_nft2]; index < totalSupply; ++index) {
             if (nftObj.ownerOf(index) == address(this)) {
                 nftObj.transferFrom(address(this), _user, index);
@@ -297,7 +299,6 @@ contract Migrator is Initializable, AccessControlUpgradeable, IERC721Receiver {
             }
         }
 
-        lastAssetIdMinted[_nft2] = newLastMintedID;
         return true;
     }
 

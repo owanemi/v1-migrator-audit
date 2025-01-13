@@ -68,13 +68,13 @@ contract ATLYARD is ERC721A, Ownable {
         require(batch.active, "Current Batch is not active");
         require(quantity > 0, "Quantity must be greater than zero");
         require(quantity <= maxBuyAmount || msg.sender == owner(), "Exceeds max buy limit");
+        
+        // Update remaining quantity
+        _currentBatch.quantity -= quantity;
 
         if (!freeParticipants[msg.sender]) {
             require(_pay(msg.sender, quantity), "Payment failed");
         }
-
-        // Update remaining quantity
-        _currentBatch.quantity -= quantity;
 
         // Mint tokens
         _safeMint(msg.sender, quantity);
@@ -170,8 +170,7 @@ contract ATLYARD is ERC721A, Ownable {
      */
     function _pay(address payer, uint256 quantity) internal returns (bool success) {
         IERC20 token = IERC20(paymentToken);
-        token.transferFrom(payer, feeCollector, _currentBatch.price * quantity);
-        return true;
+        return token.transferFrom(payer, feeCollector, _currentBatch.price * quantity);
     }
 
     /**

@@ -96,11 +96,12 @@ contract PLOTV2 is ERC721A, AccessControlUpgradeable {
         address sender = _msgSender();
         if (quantity > maxBuyAmount && !hasRole(SIGNER_ROLE, sender)) revert MaxBuyAmountLimitReached();
 
+        currentBatch.quantity -= quantity;
+
         if (!freeParticipants[sender]) {
             if (!_pay(sender, quantity)) revert PaymentFailed();
         }
 
-        currentBatch.quantity -= quantity;
         _safeMint(sender, quantity);
     }
 
@@ -139,16 +140,19 @@ contract PLOTV2 is ERC721A, AccessControlUpgradeable {
 
     function setPaymentToken(address _paymentToken) external {
         _onlySigner();
+        require(_paymentToken != address(0), "Invalid address");
         paymentToken = _paymentToken;
     }
 
     function setFeeCollector(address collector) external {
         _onlySigner();
+        require(collector != address(0), "Invalid address");
         feeCollector = collector;
     }
 
     function setFreeParticipant(address participant, bool isFree) external {
         _onlySigner();
+        require(participant != address(0), "Invalid address");
         freeParticipants[participant] = isFree;
     }
 

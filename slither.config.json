@@ -6,5 +6,7 @@
     "exclude_high": false,
     "disable_color": false,
     "legacy_ast": false,
-    "exclude_dependencies": true
+    "exclude_dependencies": true,
+    "filter_paths": "src/COA-Contracts/land-nfts-v2/ERC721A.sol|lib/|src/COA-Contracts/land-nfts/ERC721A.sol"
+    
 }
