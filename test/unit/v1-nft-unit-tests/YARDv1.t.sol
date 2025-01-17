@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import { Test, console } from "forge-std/Test.sol";
-import { ATLYARD } from "src/COA-Contracts/land-nfts/YARD.sol";
-import { ERC20Mock } from "lib/openzeppelin-contracts/contracts/mocks/ERC20Mock.sol";
+import {Test, console} from "forge-std/Test.sol";
+import {ATLYARD} from "src/COA-Contracts/land-nfts/YARD.sol";
+import {ERC20Mock} from "lib/openzeppelin-contracts/contracts/mocks/ERC20Mock.sol";
 
 contract ATLYARDTest is Test {
     ATLYARD public yard;
@@ -16,7 +16,7 @@ contract ATLYARDTest is Test {
 
     uint256 public initialMintQuantity = 100;
     uint256 public initialPrice = 10;
-    // uitn256 public 
+    // uitn256 public
 
     function setUp() public {
         // Deploy a mock ERC20 token
@@ -28,7 +28,7 @@ contract ATLYARDTest is Test {
         yard.setFeeCollector(owner);
 
         paymentToken.mint(user1, 900);
-        
+
         vm.stopPrank();
     }
 
@@ -47,7 +47,6 @@ contract ATLYARDTest is Test {
 
         // we check the fee collectors balance before
         uint256 feeCollectorBalanceBefore = paymentToken.balanceOf(feeCollector);
-
 
         // Mint tokens for addr1
         yard.mint(mintQuantity);
@@ -81,8 +80,7 @@ contract ATLYARDTest is Test {
         assertEq(quantity, 200);
         assertEq(price, 20);
         assertTrue(active);
-}
-
+    }
 
     function testSetTxFeeYard() public {
         // Admin sets a new transaction fee
@@ -105,9 +103,9 @@ contract ATLYARDTest is Test {
         uint256 gasBeforeSetPaymentToken = gasleft();
 
         yard.setPaymentToken(newPaymentToken);
-        
+
         uint256 gasAfterSetPaymentToken = gasleft();
-        
+
         console.log("Gas used for setPaymentToken:", gasBeforeSetPaymentToken - gasAfterSetPaymentToken);
         vm.stopPrank();
 
@@ -159,9 +157,10 @@ contract ATLYARDTest is Test {
         yard.setCurrentBatchActive(false);
         vm.stopPrank();
 
-        (, , bool active) = yard._currentBatch();
+        (,, bool active) = yard._currentBatch();
         assertFalse(active);
     }
+
     function testRevertIfNotOwnerYard() public {
         // Test that only the owner can set the current batch
         vm.startPrank(user2);
@@ -170,7 +169,7 @@ contract ATLYARDTest is Test {
         vm.stopPrank();
     }
 
-   function testSetFeeCollectorRevertIfZeroAddressYard() public {
+    function testSetFeeCollectorRevertIfZeroAddressYard() public {
         vm.startPrank(owner);
         vm.expectRevert("Invalid address");
         yard.setFeeCollector(address(0));

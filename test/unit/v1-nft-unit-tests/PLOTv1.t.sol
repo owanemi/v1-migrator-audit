@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import { Test, console } from "forge-std/Test.sol";
-import { ATLPLOT } from "src/COA-Contracts/land-nfts/PLOT.sol";
-import { ERC20Mock } from "lib/openzeppelin-contracts/contracts/mocks/ERC20Mock.sol";
+import {Test, console} from "forge-std/Test.sol";
+import {ATLPLOT} from "src/COA-Contracts/land-nfts/PLOT.sol";
+import {ERC20Mock} from "lib/openzeppelin-contracts/contracts/mocks/ERC20Mock.sol";
 
 contract AtlPlotTest is Test {
     ATLPLOT public plot;
@@ -16,7 +16,7 @@ contract AtlPlotTest is Test {
 
     uint256 public initialMintQuantity = 100;
     uint256 public initialPrice = 10;
-    // uitn256 public 
+    // uitn256 public
 
     function setUp() public {
         // Deploy a mock ERC20 token
@@ -28,7 +28,7 @@ contract AtlPlotTest is Test {
         plot.setFeeCollector(owner);
 
         paymentToken.mint(user1, 900);
-        
+
         vm.stopPrank();
     }
 
@@ -47,7 +47,6 @@ contract AtlPlotTest is Test {
 
         // we check the fee collectors balance before
         uint256 feeCollectorBalanceBefore = paymentToken.balanceOf(feeCollector);
-
 
         // Mint tokens for addr1
         plot.mint(mintQuantity);
@@ -81,8 +80,7 @@ contract AtlPlotTest is Test {
         assertEq(quantity, 200);
         assertEq(price, 20);
         assertTrue(active);
-}
-
+    }
 
     function testSetTxFeePlot() public {
         // Admin sets a new transaction fee
@@ -105,9 +103,9 @@ contract AtlPlotTest is Test {
         uint256 gasBeforeSetPaymentToken = gasleft();
 
         plot.setPaymentToken(newPaymentToken);
-        
+
         uint256 gasAfterSetPaymentToken = gasleft();
-        
+
         console.log("Gas used for setPaymentToken:", gasBeforeSetPaymentToken - gasAfterSetPaymentToken);
         vm.stopPrank();
 
@@ -159,9 +157,10 @@ contract AtlPlotTest is Test {
         plot.setCurrentBatchActive(false);
         vm.stopPrank();
 
-        (, , bool active) = plot._currentBatch();
+        (,, bool active) = plot._currentBatch();
         assertFalse(active);
     }
+
     function testRevertIfNotOwnerPlot() public {
         // Test that only the owner can set the current batch
         vm.startPrank(user2);
@@ -170,7 +169,7 @@ contract AtlPlotTest is Test {
         vm.stopPrank();
     }
 
-   function testSetFeeCollectorRevertIfZeroAddressPlot() public {
+    function testSetFeeCollectorRevertIfZeroAddressPlot() public {
         vm.startPrank(owner);
         vm.expectRevert("Invalid address");
         plot.setFeeCollector(address(0));

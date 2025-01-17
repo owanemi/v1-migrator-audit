@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.4;
 
-import { Test } from "forge-std/Test.sol";
-import { PRLZ } from "src/COA-Contracts/Prlz.sol";
+import {Test} from "forge-std/Test.sol";
+import {PRLZ} from "src/COA-Contracts/Prlz.sol";
 
 contract przTest is Test {
     PRLZ prz;

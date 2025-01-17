@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import { Test, console } from "forge-std/Test.sol";
-import { ATLACRE } from "src/COA-Contracts/land-nfts/ACRE.sol";
-import { ERC20Mock } from "lib/openzeppelin-contracts/contracts/mocks/ERC20Mock.sol";
+import {Test, console} from "forge-std/Test.sol";
+import {ATLACRE} from "src/COA-Contracts/land-nfts/ACRE.sol";
+import {ERC20Mock} from "lib/openzeppelin-contracts/contracts/mocks/ERC20Mock.sol";
 
 contract ATLACRETest is Test {
     ATLACRE public acre;
@@ -16,7 +16,7 @@ contract ATLACRETest is Test {
 
     uint256 public initialMintQuantity = 100;
     uint256 public initialPrice = 10;
-    // uitn256 public 
+    // uitn256 public
 
     function setUp() public {
         // Deploy a mock ERC20 token
@@ -28,7 +28,7 @@ contract ATLACRETest is Test {
         acre.setFeeCollector(owner);
 
         paymentToken.mint(user1, 900);
-        
+
         vm.stopPrank();
     }
 
@@ -47,7 +47,6 @@ contract ATLACRETest is Test {
 
         // we check the fee collectors balance before
         uint256 feeCollectorBalanceBefore = paymentToken.balanceOf(feeCollector);
-
 
         // Mint tokens for addr1
         acre.mint(mintQuantity);
@@ -81,8 +80,7 @@ contract ATLACRETest is Test {
         assertEq(quantity, 200);
         assertEq(price, 20);
         assertTrue(active);
-}
-
+    }
 
     function testSetTxFeeAcre() public {
         // Admin sets a new transaction fee
@@ -105,9 +103,9 @@ contract ATLACRETest is Test {
         uint256 gasBeforeSetPaymentToken = gasleft();
 
         acre.setPaymentToken(newPaymentToken);
-        
+
         uint256 gasAfterSetPaymentToken = gasleft();
-        
+
         console.log("Gas used for setPaymentToken:", gasBeforeSetPaymentToken - gasAfterSetPaymentToken);
         vm.stopPrank();
 
@@ -159,9 +157,10 @@ contract ATLACRETest is Test {
         acre.setCurrentBatchActive(false);
         vm.stopPrank();
 
-        (, , bool active) = acre._currentBatch();
+        (,, bool active) = acre._currentBatch();
         assertFalse(active);
     }
+
     function testRevertIfNotOwnerAcre() public {
         // Test that only the owner can set the current batch
         vm.startPrank(user2);
@@ -170,7 +169,7 @@ contract ATLACRETest is Test {
         vm.stopPrank();
     }
 
-   function testSetFeeCollectorRevertIfZeroAddressAcre() public {
+    function testSetFeeCollectorRevertIfZeroAddressAcre() public {
         vm.startPrank(owner);
         vm.expectRevert("Invalid address");
         acre.setFeeCollector(address(0));

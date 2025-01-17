@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
-import  { ERC721A } from "./ERC721A.sol";
-import { Ownable } from 'lib/openzeppelin-contracts/contracts/access/Ownable.sol';
-import { IERC20 } from 'lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol';
+import {ERC721A} from "./ERC721A.sol";
+import {Ownable} from "lib/openzeppelin-contracts/contracts/access/Ownable.sol";
+import {IERC20} from "lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 
 /**
  * @title ATLPLOT
@@ -20,8 +20,8 @@ contract ATLPLOT is ERC721A, Ownable {
     //////////////////////////////////////////////////////////////*/
     struct Batch {
         uint256 quantity; // Remaining tokens in the batch
-        uint256 price;    // Price per token in payment token
-        bool active;      // Whether the batch is active for minting
+        uint256 price; // Price per token in payment token
+        bool active; // Whether the batch is active for minting
     }
 
     /*///////////////////////////////////////////////////////////
@@ -29,12 +29,13 @@ contract ATLPLOT is ERC721A, Ownable {
     ////////////////////////////////////////////////////////////*/
     Batch public _currentBatch;
     address public paymentToken; // ERC20 token for payments
-    address public feeCollector;           // Address to collect minting fees
+    address public feeCollector; // Address to collect minting fees
 
-    uint256 public txFeeAmount;  // Transaction fee in payment token
+    uint256 public txFeeAmount; // Transaction fee in payment token
     uint256 public maxBuyAmount; // Maximum tokens a user can mint in a single transaction
 
-    string private baseUri = "https://sidekickfinance.mypinata.cloud/ipfs/QmVRVjmmK5bDJdpSXAyZ4iqQsR5q7w4tyDPTqhV21UiYTM";
+    string private baseUri =
+        "https://sidekickfinance.mypinata.cloud/ipfs/QmVRVjmmK5bDJdpSXAyZ4iqQsR5q7w4tyDPTqhV21UiYTM";
 
     mapping(address => bool) public freeParticipantControllers;
     mapping(address => bool) public freeParticipants;
@@ -71,7 +72,7 @@ contract ATLPLOT is ERC721A, Ownable {
 
         // Update remaining quantity
         _currentBatch.quantity -= quantity;
-        
+
         if (!freeParticipants[msg.sender]) {
             require(_pay(msg.sender, quantity), "Payment failed");
         }
@@ -89,11 +90,7 @@ contract ATLPLOT is ERC721A, Ownable {
     function setCurrentBatch(uint256 quantity, uint256 price, bool active) external onlyOwner {
         require(_currentBatch.quantity == 0, "Current batch not finished");
 
-        _currentBatch = Batch({
-            quantity: quantity,
-            price: price,
-            active: active
-        });
+        _currentBatch = Batch({quantity: quantity, price: price, active: active});
 
         emit NewBatchCreated(_currentIndex);
     }
@@ -171,7 +168,6 @@ contract ATLPLOT is ERC721A, Ownable {
     function _pay(address payer, uint256 quantity) internal returns (bool success) {
         IERC20 token = IERC20(paymentToken);
         return token.transferFrom(payer, feeCollector, _currentBatch.price * quantity);
-    
     }
 
     /**

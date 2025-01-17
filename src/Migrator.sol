@@ -1,19 +1,20 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import { AccessControlUpgradeable } from "lib/openzeppelin-contracts-upgradeable/contracts/access/AccessControlUpgradeable.sol";
-import { Initializable } from "lib/openzeppelin-contracts-upgradeable/contracts/proxy/utils/Initializable.sol";
-import { SafeMathUpgradeable } from "lib/openzeppelin-contracts-upgradeable/contracts/utils/math/SafeMathUpgradeable.sol";
-import { IERC20Upgradeable } from "lib/openzeppelin-contracts-upgradeable/contracts/token/ERC20/IERC20Upgradeable.sol";
-import { IERC721Receiver } from "./interfaces/IERC721Receiver.sol";
-import { ICollectible } from "./interfaces/ICollectible.sol";
+import {AccessControlUpgradeable} from
+    "lib/openzeppelin-contracts-upgradeable/contracts/access/AccessControlUpgradeable.sol";
+import {Initializable} from "lib/openzeppelin-contracts-upgradeable/contracts/proxy/utils/Initializable.sol";
+import {SafeMathUpgradeable} from "lib/openzeppelin-contracts-upgradeable/contracts/utils/math/SafeMathUpgradeable.sol";
+import {IERC20Upgradeable} from "lib/openzeppelin-contracts-upgradeable/contracts/token/ERC20/IERC20Upgradeable.sol";
+import {IERC721Receiver} from "./interfaces/IERC721Receiver.sol";
+import {ICollectible} from "./interfaces/ICollectible.sol";
 
 /**
  * @title Migrator
  * @notice Handles migration of ERC20 tokens and ERC721 NFTs from V1 to V2 versions.
  */
 contract Migrator is Initializable, AccessControlUpgradeable, IERC721Receiver {
-    using SafeMathUpgradeable for uint;
+    using SafeMathUpgradeable for uint256;
 
     /*//////////////////////////////////////////////////////////////
                                  EVENTS
@@ -22,24 +23,14 @@ contract Migrator is Initializable, AccessControlUpgradeable, IERC721Receiver {
         address indexed user,
         address indexed token1,
         address indexed token2,
-        uint amount1,
-        uint amount2,
-        uint date
+        uint256 amount1,
+        uint256 amount2,
+        uint256 date
     );
     event NFTMigrationCompleted(
-        address indexed user,
-        address indexed nft1,
-        address indexed nft2,
-        uint oldId,
-        uint newId,
-        uint date
+        address indexed user, address indexed nft1, address indexed nft2, uint256 oldId, uint256 newId, uint256 date
     );
-    event MigrationTokenSet(
-        address indexed token1,
-        address indexed token2,
-        uint indexed price,
-        uint date
-    );
+    event MigrationTokenSet(address indexed token1, address indexed token2, uint256 indexed price, uint256 date);
 
     /*//////////////////////////////////////////////////////////////
                                  ERRORS
@@ -58,7 +49,7 @@ contract Migrator is Initializable, AccessControlUpgradeable, IERC721Receiver {
         address yardV2;
         address tokenV1;
         address tokenV2;
-        uint price;
+        uint256 price;
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -66,15 +57,15 @@ contract Migrator is Initializable, AccessControlUpgradeable, IERC721Receiver {
     //////////////////////////////////////////////////////////////*/
     Requirement public Requirements;
 
-    mapping(address => uint) public lastAssetIdMinted;
-    mapping(address => uint) public tokensMigrated;
+    mapping(address => uint256) public lastAssetIdMinted;
+    mapping(address => uint256) public tokensMigrated;
 
     bytes32 public constant SIGNER_ROLE = keccak256("SIGNER_ROLE");
 
     /*//////////////////////////////////////////////////////////////
                       EXTERNAL & PUBLIC FUNCTIONS
     //////////////////////////////////////////////////////////////*/
-   /*//////////////////////////////////////////////////////////////
+    /*//////////////////////////////////////////////////////////////
                          INITIALIZATION FUNCTION
     //////////////////////////////////////////////////////////////*/
 
@@ -93,25 +84,21 @@ contract Migrator is Initializable, AccessControlUpgradeable, IERC721Receiver {
      * @param _token2 The address of the destination token.
      * @return result Whether the migration was successful.
      */
-    function migrateERC20Token(
-        uint256 _amount,
-        address _token1,
-        address _token2
-    ) external returns (bool result) {
+    function migrateERC20Token(uint256 _amount, address _token1, address _token2) external returns (bool result) {
         if (_amount == 0) revert TransactionMessage("Amount is zero");
         if (Requirements.tokenV1 != _token1) revert TransactionMessage("Invalid token1 address");
         if (Requirements.tokenV2 != _token2) revert TransactionMessage("Invalid token2 address");
         if (Requirements.price == 0) revert TransactionMessage("Invalid price set");
 
         // Verify allowance and balance
-        uint allowance = IERC20Upgradeable(_token1).allowance(_msgSender(), address(this));
+        uint256 allowance = IERC20Upgradeable(_token1).allowance(_msgSender(), address(this));
         if (_amount > allowance) revert TransactionMessage("Insufficient allowance");
 
-        uint balance = IERC20Upgradeable(_token1).balanceOf(_msgSender());
+        uint256 balance = IERC20Upgradeable(_token1).balanceOf(_msgSender());
         if (_amount > balance) revert TransactionMessage("Insufficient balance");
 
         // Calculate the amount of token2 to transfer
-        uint tokenBToReceive = Requirements.price.mul(_amount);
+        uint256 tokenBToReceive = Requirements.price.mul(_amount);
         balance = IERC20Upgradeable(_token2).balanceOf(address(this));
         if (tokenBToReceive > balance) revert TransactionMessage("Insufficient token balance on migrator");
 
@@ -137,12 +124,11 @@ contract Migrator is Initializable, AccessControlUpgradeable, IERC721Receiver {
      * @param _yard Array of yard token IDs to migrate.
      * @return success Whether the migration was successful.
      */
-    function migrateAllAsset(
-        uint[] memory _acre,
-        uint[] memory _plot,
-        uint[] memory _yard
-    ) external returns (bool success) {
-        uint migrateable = _acre.length + _plot.length + _yard.length;
+    function migrateAllAsset(uint256[] memory _acre, uint256[] memory _plot, uint256[] memory _yard)
+        external
+        returns (bool success)
+    {
+        uint256 migrateable = _acre.length + _plot.length + _yard.length;
         if (migrateable == 0) revert TransactionMessage("Not enough NFTs to migrate");
 
         if (_acre.length > 0) {
@@ -164,12 +150,7 @@ contract Migrator is Initializable, AccessControlUpgradeable, IERC721Receiver {
      * @notice Confirms the contract's ability to receive ERC721 NFTs.
      * @inheritdoc IERC721Receiver
      */
-    function onERC721Received(
-        address,
-        address,
-        uint256,
-        bytes calldata
-    ) external pure override returns (bytes4) {
+    function onERC721Received(address, address, uint256, bytes calldata) external pure override returns (bytes4) {
         return this.onERC721Received.selector;
     }
 
@@ -208,11 +189,7 @@ contract Migrator is Initializable, AccessControlUpgradeable, IERC721Receiver {
      * @param _tokenV2 Address of the new ERC20 token.
      * @param _price Conversion price between old and new tokens.
      */
-    function setTokenInfo(
-        address _tokenV1,
-        address _tokenV2,
-        uint _price
-    ) external {
+    function setTokenInfo(address _tokenV1, address _tokenV2, uint256 _price) external {
         _onlySigner();
         if (_tokenV1 != address(0)) Requirements.tokenV1 = _tokenV1;
         if (_tokenV2 != address(0)) Requirements.tokenV2 = _tokenV2;
@@ -232,12 +209,8 @@ contract Migrator is Initializable, AccessControlUpgradeable, IERC721Receiver {
      * @param _nft2 Address of the new NFT contract.
      * @param _nfts Array of token IDs to migrate.
      */
-    function _migrateNFTBatch(
-        address _nft1,
-        address _nft2,
-        uint[] memory _nfts
-    ) internal {
-        for (uint i = 0; i < _nfts.length; i++) {
+    function _migrateNFTBatch(address _nft1, address _nft2, uint256[] memory _nfts) internal {
+        for (uint256 i = 0; i < _nfts.length; i++) {
             _withdrawOldNFT(_nft1, _nfts[i]);
         }
         _mintNewNFT(_nft1, _nft2, _msgSender(), _nfts.length, _nfts);
@@ -249,15 +222,14 @@ contract Migrator is Initializable, AccessControlUpgradeable, IERC721Receiver {
      * @param _tokenId ID of the token to withdraw.
      * @return success Whether the operation succeeded.
      */
-    function _withdrawOldNFT(
-        address _nft1,
-        uint256 _tokenId
-    ) private returns (bool success) {
-        if (ICollectible(_nft1).ownerOf(_tokenId) != _msgSender())
+    function _withdrawOldNFT(address _nft1, uint256 _tokenId) private returns (bool success) {
+        if (ICollectible(_nft1).ownerOf(_tokenId) != _msgSender()) {
             revert TransactionMessage("Invalid NFT owner");
+        }
 
-        if (!ICollectible(_nft1).isApprovedForAll(_msgSender(), address(this)))
+        if (!ICollectible(_nft1).isApprovedForAll(_msgSender(), address(this))) {
             revert TransactionMessage("Migrator lacks approval");
+        }
 
         ICollectible(_nft1).transferFrom(_msgSender(), address(this), _tokenId);
         return true;
@@ -272,24 +244,21 @@ contract Migrator is Initializable, AccessControlUpgradeable, IERC721Receiver {
      * @param _nfts Array of old token IDs being migrated.
      * @return result Whether the minting succeeded.
      */
-    function _mintNewNFT(
-        address _nft1,
-        address _nft2,
-        address _user,
-        uint _quantity,
-        uint[] memory _nfts
-    ) internal returns (bool result) {
+    function _mintNewNFT(address _nft1, address _nft2, address _user, uint256 _quantity, uint256[] memory _nfts)
+        internal
+        returns (bool result)
+    {
         ICollectible nftObj = ICollectible(_nft2);
         nftObj.mintAsFreeMinter(_quantity);
 
-        uint totalSupply = nftObj.totalSupply();
-        uint quantityMinted;
-        uint newLastMintedID;
-        uint counter;
+        uint256 totalSupply = nftObj.totalSupply();
+        uint256 quantityMinted;
+        uint256 newLastMintedID;
+        uint256 counter;
 
         lastAssetIdMinted[_nft2] = newLastMintedID;
 
-        for (uint index = lastAssetIdMinted[_nft2]; index < totalSupply; ++index) {
+        for (uint256 index = lastAssetIdMinted[_nft2]; index < totalSupply; ++index) {
             if (nftObj.ownerOf(index) == address(this)) {
                 nftObj.transferFrom(address(this), _user, index);
                 newLastMintedID = index;

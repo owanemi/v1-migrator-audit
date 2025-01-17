@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
-import { Test, console } from "forge-std/Test.sol";
-import { YARDV2 } from "src/COA-Contracts/land-nfts-v2/YARDV2.sol";
-import { ERC20Mock } from "lib/openzeppelin-contracts/contracts/mocks/ERC20Mock.sol";
+import {Test, console} from "forge-std/Test.sol";
+import {YARDV2} from "src/COA-Contracts/land-nfts-v2/YARDV2.sol";
+import {ERC20Mock} from "lib/openzeppelin-contracts/contracts/mocks/ERC20Mock.sol";
 
 contract YardV2Test is Test {
     YARDV2 public yard;
@@ -48,9 +48,9 @@ contract YardV2Test is Test {
     function testBatchCreationyardV2() public {
         vm.startPrank(owner);
         yard.setCurrentBatch(initialMintQuantity, initialPrice, true);
-        
+
         (uint256 price, uint256 quantity, uint256 startIndex, uint256 batchId, bool active) = yard.currentBatch();
-        
+
         assertEq(quantity, initialMintQuantity, "Batch quantity mismatch");
         assertEq(price, initialPrice, "Batch price mismatch");
         assertEq(startIndex, 0, "Start index should be 0");
@@ -62,7 +62,7 @@ contract YardV2Test is Test {
     function testCannotCreateBatchWithExistingQuantityyardV2() public {
         vm.startPrank(owner);
         yard.setCurrentBatch(initialMintQuantity, initialPrice, true);
-        
+
         vm.expectRevert(); // Should revert with CurrentBatchNotActive
         yard.setCurrentBatch(initialMintQuantity, initialPrice, true);
         vm.stopPrank();
@@ -78,20 +78,16 @@ contract YardV2Test is Test {
         // Approve tokens
         vm.startPrank(user1);
         paymentToken.approve(address(yard), initialPrice * 2);
-        
+
         // Mint NFTs
         yard.mint(2);
-        
+
         // Verify NFT balance
         assertEq(yard.balanceOf(user1), 2, "User should have 2 NFTs");
-        
+
         // Verify token payment
         uint256 expectedBalance = ownerInitialBalance + (initialPrice * 2);
-        assertEq(
-            paymentToken.balanceOf(owner),
-            expectedBalance,
-            "Owner should receive correct payment amount"
-        );
+        assertEq(paymentToken.balanceOf(owner), expectedBalance, "Owner should receive correct payment amount");
         vm.stopPrank();
     }
 
@@ -144,10 +140,9 @@ contract YardV2Test is Test {
         vm.stopPrank();
     }
 
-
     function testSetPaymentTokenyardv2() public {
         address newToken = makeAddr("newToken");
-        
+
         vm.startPrank(owner);
         yard.setPaymentToken(newToken);
         assertEq(yard.paymentToken(), newToken, "Payment token should be updated");
@@ -163,20 +158,20 @@ contract YardV2Test is Test {
 
     function testBatchLifecycleyardv2() public {
         vm.startPrank(owner);
-        
+
         // Create batch
         yard.setCurrentBatch(initialMintQuantity, initialPrice, true);
-        
+
         // Deactivate batch
         yard.setCurrentBatchActive(false);
         (,,,, bool active) = yard.currentBatch();
         assertFalse(active, "Batch should be inactive");
-        
+
         // Reactivate batch
         yard.setCurrentBatchActive(true);
         (,,,, active) = yard.currentBatch();
         assertTrue(active, "Batch should be active again");
-        
+
         vm.stopPrank();
     }
 
@@ -188,7 +183,7 @@ contract YardV2Test is Test {
         vm.startPrank(user1);
         paymentToken.approve(address(yard), initialPrice * 2);
         yard.mint(2);
-        
+
         vm.expectRevert(YARDV2.NoMoreTokensLeft.selector);
         yard.mint(1);
         vm.stopPrank();
@@ -197,7 +192,7 @@ contract YardV2Test is Test {
     // Test transaction fee functionality
     function testSetAndCollectTxFeeyardv2() public {
         uint256 newFee = 1 ether;
-        
+
         vm.startPrank(owner);
         yard.setTxFee(newFee);
         assertEq(yard.txFeeAmount(), newFee, "Transaction fee should be updated");

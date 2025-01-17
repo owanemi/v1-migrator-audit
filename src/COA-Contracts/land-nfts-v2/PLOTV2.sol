@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
-import { ERC721A } from "./ERC721A.sol";
-import { IERC20Upgradeable } from "lib/openzeppelin-contracts-upgradeable/contracts/token/ERC20/IERC20Upgradeable.sol";
-import { AccessControlUpgradeable } from "lib/openzeppelin-contracts-upgradeable/contracts/access/AccessControlUpgradeable.sol";
+import {ERC721A} from "./ERC721A.sol";
+import {IERC20Upgradeable} from "lib/openzeppelin-contracts-upgradeable/contracts/token/ERC20/IERC20Upgradeable.sol";
+import {AccessControlUpgradeable} from
+    "lib/openzeppelin-contracts-upgradeable/contracts/access/AccessControlUpgradeable.sol";
 
 /**
  * @title PLOT
@@ -18,8 +19,8 @@ contract PLOTV2 is ERC721A, AccessControlUpgradeable {
         uint256 price;
         uint256 quantity;
         uint256 startIndex;
-        uint256 batchId; 
-        bool active; 
+        uint256 batchId;
+        bool active;
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -105,22 +106,13 @@ contract PLOTV2 is ERC721A, AccessControlUpgradeable {
         _safeMint(sender, quantity);
     }
 
-    function setCurrentBatch(
-        uint256 quantity,
-        uint256 price,
-        bool active
-    ) external {
+    function setCurrentBatch(uint256 quantity, uint256 price, bool active) external {
         _onlySigner();
         if (currentBatch.quantity > 0) revert CurrentBatchNotActive();
 
         uint256 batchId = nextBatchId++;
-        Batch memory newBatch = Batch({
-            quantity: quantity,
-            price: price,
-            startIndex: _currentIndex,
-            batchId: batchId,
-            active: active
-        });
+        Batch memory newBatch =
+            Batch({quantity: quantity, price: price, startIndex: _currentIndex, batchId: batchId, active: active});
 
         currentBatch = newBatch;
         allBatches[batchId] = newBatch;

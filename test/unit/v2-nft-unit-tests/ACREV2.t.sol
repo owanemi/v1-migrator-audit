@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.18;
 
-import { Test, console } from "forge-std/Test.sol";
-import { ACREV2 } from "src/COA-Contracts/land-nfts-v2/ACREV2.sol";
-import { ERC20Mock } from "lib/openzeppelin-contracts/contracts/mocks/ERC20Mock.sol";
+import {Test, console} from "forge-std/Test.sol";
+import {ACREV2} from "src/COA-Contracts/land-nfts-v2/ACREV2.sol";
+import {ERC20Mock} from "lib/openzeppelin-contracts/contracts/mocks/ERC20Mock.sol";
 
 contract AcreV2Test is Test {
     ACREV2 public acre;
@@ -48,9 +48,9 @@ contract AcreV2Test is Test {
     function testBatchCreationAcreV2() public {
         vm.startPrank(owner);
         acre.setCurrentBatch(initialMintQuantity, initialPrice, true);
-        
+
         (uint256 price, uint256 quantity, uint256 startIndex, uint256 batchId, bool active) = acre.currentBatch();
-        
+
         assertEq(quantity, initialMintQuantity, "Batch quantity mismatch");
         assertEq(price, initialPrice, "Batch price mismatch");
         assertEq(startIndex, 0, "Start index should be 0");
@@ -62,7 +62,7 @@ contract AcreV2Test is Test {
     function testCannotCreateBatchWithExistingQuantityAcreV2() public {
         vm.startPrank(owner);
         acre.setCurrentBatch(initialMintQuantity, initialPrice, true);
-        
+
         vm.expectRevert(); // Should revert with CurrentBatchNotActive
         acre.setCurrentBatch(initialMintQuantity, initialPrice, true);
         vm.stopPrank();
@@ -78,20 +78,16 @@ contract AcreV2Test is Test {
         // Approve tokens
         vm.startPrank(user1);
         paymentToken.approve(address(acre), initialPrice * 2);
-        
+
         // Mint NFTs
         acre.mint(2);
-        
+
         // Verify NFT balance
         assertEq(acre.balanceOf(user1), 2, "User should have 2 NFTs");
-        
+
         // Verify token payment
         uint256 expectedBalance = ownerInitialBalance + (initialPrice * 2);
-        assertEq(
-            paymentToken.balanceOf(owner),
-            expectedBalance,
-            "Owner should receive correct payment amount"
-        );
+        assertEq(paymentToken.balanceOf(owner), expectedBalance, "Owner should receive correct payment amount");
         vm.stopPrank();
     }
 
@@ -144,10 +140,9 @@ contract AcreV2Test is Test {
         vm.stopPrank();
     }
 
-
     function testSetPaymentTokenAcrev2() public {
         address newToken = makeAddr("newToken");
-        
+
         vm.startPrank(owner);
         acre.setPaymentToken(newToken);
         assertEq(acre.paymentToken(), newToken, "Payment token should be updated");
@@ -163,20 +158,20 @@ contract AcreV2Test is Test {
 
     function testBatchLifecycleAcrev2() public {
         vm.startPrank(owner);
-        
+
         // Create batch
         acre.setCurrentBatch(initialMintQuantity, initialPrice, true);
-        
+
         // Deactivate batch
         acre.setCurrentBatchActive(false);
         (,,,, bool active) = acre.currentBatch();
         assertFalse(active, "Batch should be inactive");
-        
+
         // Reactivate batch
         acre.setCurrentBatchActive(true);
         (,,,, active) = acre.currentBatch();
         assertTrue(active, "Batch should be active again");
-        
+
         vm.stopPrank();
     }
 
@@ -188,7 +183,7 @@ contract AcreV2Test is Test {
         vm.startPrank(user1);
         paymentToken.approve(address(acre), initialPrice * 2);
         acre.mint(2);
-        
+
         vm.expectRevert(ACREV2.NoMoreTokensLeft.selector);
         acre.mint(1);
         vm.stopPrank();
@@ -197,7 +192,7 @@ contract AcreV2Test is Test {
     // Test transaction fee functionality
     function testSetAndCollectTxFeeAcrev2() public {
         uint256 newFee = 1 ether;
-        
+
         vm.startPrank(owner);
         acre.setTxFee(newFee);
         assertEq(acre.txFeeAmount(), newFee, "Transaction fee should be updated");
