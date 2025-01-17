@@ -252,7 +252,6 @@ contract MigratorTest is Test {
         migrator.setERC721Requirements(address(1), address(0), address(0), address(0), address(0), address(0));
     }
 
-    // New Complex Test Scenarios
 
     function testLargeBatchMigration() public {
         vm.startPrank(admin);
@@ -401,7 +400,7 @@ contract MigratorTest is Test {
     }
 
 
-    // Edge Case: Reentrancy Attack Test
+    //Reentrancy Attack Test
     function testReentrancyAttack() public {
         MaliciousReceiver malicious = new MaliciousReceiver(address(migrator), address(tokenV1), address(tokenV2));
         
@@ -415,8 +414,8 @@ contract MigratorTest is Test {
         migrator.migrateERC20Token(1e18, address(tokenV1), address(tokenV2));
     }
 
-    // Edge Case: Maximum Value Migration
-    function testMaxValueMigration() public {
+    // Maximum Value Migration
+    function testHighValueMigration() public {
         vm.startPrank(admin);
         uint256 largeAmount = 2**200; // Very large number but below uint256 max
         tokenV1.mint(user, largeAmount);
@@ -432,7 +431,7 @@ contract MigratorTest is Test {
         vm.stopPrank();
     }
 
-    // Edge Case: Concurrent Migrations
+    // Concurrent Migrations
     function testConcurrentMigrations() public {
         address user1 = makeAddr("user1");
         address user2 = makeAddr("user2");
@@ -458,8 +457,7 @@ contract MigratorTest is Test {
         assertEq(tokenV2.balanceOf(user2), 1e18, "User2 received incorrect amount");
     }
 
-    // Edge Case: Token Approval Manipulation
-// Edge Case: Token Approval Manipulation
+    //Token Approval Manipulation
     function testApprovalManipulation() public {
         vm.startPrank(user);
         
@@ -482,7 +480,7 @@ contract MigratorTest is Test {
         vm.stopPrank();
     }
 
-    // Edge Case: Gas Griefing Attack
+    // Gas Griefing Attack
     function testGasGriefing() public {
         // Reduce the number to a more reasonable size that won't exceed block gas limit
         uint256 largeButReasonable = 100;
