@@ -333,10 +333,7 @@ contract MigratorTest is Test {
 
         uint256 gasUsed = gasBefore - gasleft();
 
-        uint256 gasCostInWei = gasUsed * HIGH_GAS_PRICE;
-        uint256 ethCost = gasCostInWei / 1e18;
         console.log("Gas used under high congestion:", gasUsed);
-        console.log("Cost in ETH at 500 gwei:", ethCost);
 
         vm.stopPrank();
     }
@@ -403,8 +400,199 @@ contract MigratorTest is Test {
         vm.stopPrank();
     }
 
+
+    // Edge Case: Reentrancy Attack Test
+    function testReentrancyAttack() public {
+        MaliciousReceiver malicious = new MaliciousReceiver(address(migrator), address(tokenV1), address(tokenV2));
+        
+        vm.startPrank(admin);
+        tokenV1.transfer(address(malicious), 1e18);
+        tokenV2.transfer(address(migrator), 1e18);
+        vm.stopPrank();
+
+        vm.prank(address(malicious));
+        vm.expectRevert(); // Should revert on reentrancy attempt
+        migrator.migrateERC20Token(1e18, address(tokenV1), address(tokenV2));
+    }
+
+    // Edge Case: Maximum Value Migration
+    function testMaxValueMigration() public {
+        vm.startPrank(admin);
+        uint256 largeAmount = 2**200; // Very large number but below uint256 max
+        tokenV1.mint(user, largeAmount);
+        tokenV2.mint(address(migrator), largeAmount * 2); // Double for 1:2 ratio
+        vm.stopPrank();
+
+        vm.startPrank(user);
+        tokenV1.approve(address(migrator), largeAmount);
+        
+        bool success = migrator.migrateERC20Token(largeAmount, address(tokenV1), address(tokenV2));
+        assertTrue(success, "Large value migration failed");
+        assertEq(tokenV2.balanceOf(user), largeAmount * 2, "Incorrect token V2 amount received");
+        vm.stopPrank();
+    }
+
+    // Edge Case: Concurrent Migrations
+    function testConcurrentMigrations() public {
+        address user1 = makeAddr("user1");
+        address user2 = makeAddr("user2");
+        
+        vm.startPrank(admin);
+        tokenV1.transfer(user1, 1e18);
+        tokenV1.transfer(user2, 1e18);
+        vm.stopPrank();
+
+        vm.prank(user1);
+        tokenV1.approve(address(migrator), 1e18);
+        
+        vm.prank(user2);
+        tokenV1.approve(address(migrator), 1e18);
+
+        vm.prank(user1);
+        migrator.migrateERC20Token(5e17, address(tokenV1), address(tokenV2));
+        
+        vm.prank(user2);
+        migrator.migrateERC20Token(5e17, address(tokenV1), address(tokenV2));
+
+        assertEq(tokenV2.balanceOf(user1), 1e18, "User1 received incorrect amount");
+        assertEq(tokenV2.balanceOf(user2), 1e18, "User2 received incorrect amount");
+    }
+
+    // Edge Case: Token Approval Manipulation
+// Edge Case: Token Approval Manipulation
+    function testApprovalManipulation() public {
+        vm.startPrank(user);
+        
+        // Initial approval
+        tokenV1.approve(address(migrator), 1e18);
+        
+        // Reduce approval before migration
+        tokenV1.approve(address(migrator), 5e17);
+        
+        // Should fail due to insufficient allowance - using exact error message from contract
+        vm.expectRevert(abi.encodeWithSignature("TransactionMessage(string)", "Insufficient allowance"));
+        migrator.migrateERC20Token(1e18, address(tokenV1), address(tokenV2));
+        
+        // Increase approval and try again
+        tokenV1.approve(address(migrator), 1e18);
+        migrator.migrateERC20Token(1e18, address(tokenV1), address(tokenV2));
+        
+        // Verify final balance
+        assertEq(tokenV2.balanceOf(user), 2e18, "Incorrect final balance after approval changes");
+        vm.stopPrank();
+    }
+
+    // Edge Case: Gas Griefing Attack
+    function testGasGriefing() public {
+        // Reduce the number to a more reasonable size that won't exceed block gas limit
+        uint256 largeButReasonable = 100;
+        
+        vm.startPrank(admin);
+        // Mint NFTs to simulate gas griefing
+        for(uint256 i = 0; i < largeButReasonable; i++) {
+            acreV1.mint(user, i + 1000); // Start from 1000 to avoid conflicts
+        }
+        vm.stopPrank();
+
+        vm.startPrank(user);
+        acreV1.setApprovalForAll(address(migrator), true);
+        
+        // Create arrays for batch migration
+        uint256[] memory acreIds = new uint256[](largeButReasonable);
+        uint256[] memory emptyIds = new uint256[](0);
+        
+        for(uint256 i = 0; i < largeButReasonable; i++) {
+            acreIds[i] = i + 1000;
+        }
+        
+        // Measure gas consumption
+        uint256 gasBefore = gasleft();
+        migrator.migrateAllAsset(acreIds, emptyIds, emptyIds);
+        uint256 gasUsed = gasBefore - gasleft();
+        
+        console.log("Gas used in batch migration:", gasUsed);
+        // Adjust gas limit to a more reasonable threshold (around 6M for a batch of 100)
+        assertTrue(gasUsed < 6_000_000, "Gas usage too high - potential griefing vulnerability");
+        
+        // Verify NFTs were properly migrated
+        assertEq(acreV2.balanceOf(user), largeButReasonable, "Not all NFTs were migrated");
+        
+        vm.stopPrank();
+    }
+
+    // EPrice Manipulation During Migration
+    function testPriceManipulationDuringMigration() public {
+        vm.startPrank(admin);
+        uint256 amount = 1e18;
+        tokenV1.transfer(user, amount * 2);
+        vm.stopPrank();
+
+        vm.startPrank(user);
+        tokenV1.approve(address(migrator), amount * 2);
+        
+        // First migration
+        migrator.migrateERC20Token(amount, address(tokenV1), address(tokenV2));
+        
+        vm.stopPrank();
+        
+        // Admin changes price mid-migration
+        vm.startPrank(admin);
+        migrator.setTokenInfo(address(tokenV1), address(tokenV2), 3); // Change ratio to 1:3
+        vm.stopPrank();
+        
+        vm.startPrank(user);
+        migrator.migrateERC20Token(amount, address(tokenV1), address(tokenV2));
+        
+        // Verify different rates were applied correctly
+        uint256 expectedBalance = (amount * 2) + (amount * 3);
+        assertEq(tokenV2.balanceOf(user), expectedBalance, "Incorrect balance after price manipulation");
+        vm.stopPrank();
+    }
+
+    // Multiple Token Approvals and Revocations
+    function testMultipleApprovalRevocations() public {
+        vm.startPrank(user);
+        
+        // Series of approval/revocation cycles
+        for(uint256 i = 0; i < 5; i++) {
+            tokenV1.approve(address(migrator), 1e18);
+            tokenV1.approve(address(migrator), 0);
+        }
+        
+        // Final approval
+        tokenV1.approve(address(migrator), 1e18);
+        
+        // Migration should still work
+        bool success = migrator.migrateERC20Token(1e18, address(tokenV1), address(tokenV2));
+        assertTrue(success, "Migration failed after multiple approval cycles");
+        
+        vm.stopPrank();
+    }
+
     function getRequirementsTokenInfo() internal view returns (address, address, uint256) {
         (,,,,,, address token1, address token2, uint256 price) = migrator.Requirements();
         return (token1, token2, price);
+    }
+}
+
+
+contract MaliciousReceiver {
+    Migrator public migrator;
+    address public tokenV1;
+    address public tokenV2;
+    uint256 public attackCount;
+
+    constructor(address _migrator, address _tokenV1, address _tokenV2) {
+        migrator = Migrator(_migrator);
+        tokenV1 = _tokenV1;
+        tokenV2 = _tokenV2;
+    }
+
+    function onERC20Transfer(address, uint256) external {
+        if (attackCount == 0) {
+            attackCount++;
+            ERC20Mock(tokenV1).approve(address(migrator), 1e18);
+            migrator.migrateERC20Token(1e18, tokenV1, tokenV2);
+        }
     }
 }

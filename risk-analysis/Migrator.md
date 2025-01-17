@@ -1,4 +1,4 @@
-# Migrator Contract Security Analysis
+# Migrator Contract Risk Analysis
 
 ## 1. Risk Analysis Matrix
 
@@ -30,12 +30,12 @@
 ### A. Re-entrancy Attacks
 **Vector Description:**
 - During NFT/token migration, malicious contracts could re-enter migration functions
-- Potential exploitation through ERC721.onERC721Received() callback
+- Potential exploitation through `ERC721.onERC721Received()` callback
 
 **Attack Scenario:**
 1. Attacker deploys malicious token contract
 2. Initiates migration with malicious token
-3. Token's transferFrom() re-enters migration function
+3. Token's `transferFrom()` re-enters migration function
 4. Exploits state update timing
 
 **Mitigation:**
@@ -71,7 +71,7 @@ function migrateERC20Token(uint256 _amount, address _token1, address _token2) ex
 ### B. Gas Griefing
 **Vector Description:**
 - Large batch migrations could hit block gas limits
-- No maximum limit on array sizes in migrateAllAsset()
+- No maximum limit on array sizes in `migrateAllAsset()`
 
 **Attack Scenario:**
 1. Attacker submits extremely large arrays
